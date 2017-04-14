@@ -6,13 +6,18 @@ app.use(express.static('public'));
 app.set("view engine", "ejs");
 
 app.get('/', function(req, res) {
-	res.send('Homepage');
+	res.render('search');
 })
 
 app.get('/results', function(req, res) {
-	request('http://www.omdbapi.com/?t=batman', function(error, response, body) {
+	var query = req.query.search;
+	var url = "http://www.omdbapi.com/?s=" + query;
+	request( url, function(error, response, body) {
+		if (!error && response.statusCode == 200) {
 		var parsedData = JSON.parse(body);
-		res.send(parsedData);
+		console.log(parsedData)
+		res.render('results', {data: parsedData});
+		}
 	});
 });
 
